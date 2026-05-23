@@ -47,6 +47,22 @@
         android:textSize="20sp"
         android:padding="8dp"/>
 
+    <EditText
+        android:id="@+id/etDestination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter destination"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/btnNavigate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Navigation"
+        android:layout_marginTop="8dp"/>
+
     <!-- Connect Button -->
     <Button
         android:id="@+id/btnConnect"
