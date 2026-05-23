@@ -16,11 +16,36 @@ void setup() {
   tft.initR(INITR_144GREENTAB);
   tft.fillScreen(ST77XX_BLACK);
   
+  // Direction arrow area
   tft.setTextColor(ST77XX_WHITE);
-  tft.setTextSize(2);
+  tft.setTextSize(1.75);
   tft.setCursor(0, 0);
-  tft.print("TEST");
+  tft.println("< Turn LEFT");
   
+  // Street name
+  tft.setTextColor(ST77XX_YELLOW);
+  tft.setTextSize(1);
+  tft.setCursor(0, 25);
+  tft.println("Main St");
+  
+  // Divider line
+  tft.drawFastHLine(0, 40, 128, ST77XX_WHITE);
+  
+  // Distance
+  tft.setTextColor(ST77XX_GREEN);
+  tft.setTextSize(2);
+  tft.setCursor(0, 50);
+  tft.println("0.3 mi");
+  
+  // Divider line
+  tft.drawFastHLine(0, 90, 128, ST77XX_WHITE);
+  
+  // Status bar
+  tft.setTextColor(ST77XX_BLUE);
+  tft.setTextSize(1);
+  tft.setCursor(0, 100);
+  tft.println("BLE Connecting...");
+
   Serial.println("Display initialized");
 }
 
