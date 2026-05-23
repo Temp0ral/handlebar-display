@@ -108,7 +108,17 @@ class NavigationManager(private val context: Context) {
     }
 
     private fun extractStreetName(instruction: String): String {
-        val parts = instruction.split(" on ", " onto ", " to ")
-        return if (parts.size > 1) parts.last().trim() else ""
+        // Remove everything after "toward"
+        val cleaned = instruction.replace(Regex("\\s+toward.*", RegexOption.IGNORE_CASE), "").trim()
+        // Extract street after "on", "onto", "to", "Turn right on" etc
+        val patterns = listOf(" on ", " onto ", " to ")
+        for (pattern in patterns) {
+            val idx = cleaned.indexOf(pattern, ignoreCase = true)
+            if (idx >= 0) return cleaned.substring(idx + pattern.length).trim()
+        }
+        // If no pattern found just return cleaned string minus any leading direction words
+        return cleaned
+            .replace(Regex("^(turn left|turn right|continue|head|merge|take)", RegexOption.IGNORE_CASE), "")
+            .trim()
     }
 }
