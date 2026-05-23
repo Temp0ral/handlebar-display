@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#000000">
+
+    <!-- Connection Status -->
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="BLE: Disconnected"
+        android:textColor="#FF0000"
+        android:textSize="16sp"
+        android:padding="8dp"/>
+
+    <!-- Current Instruction -->
+    <TextView
+        android:id="@+id/tvInstruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No navigation active"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:padding="8dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Street Name -->
+    <TextView
+        android:id="@+id/tvStreet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#FFFF00"
+        android:textSize="18sp"
+        android:padding="8dp"/>
+
+    <!-- Distance -->
+    <TextView
+        android:id="@+id/tvDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#00FF00"
+        android:textSize="20sp"
+        android:padding="8dp"/>
+
+    <!-- Connect Button -->
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Connect to MotoHUD"
+        android:layout_marginTop="32dp"/>
+
+    <!-- Send Test Button -->
+    <Button
+        android:id="@+id/btnTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Test Instruction"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>
