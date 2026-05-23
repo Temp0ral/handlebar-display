@@ -1,18 +1,27 @@
 #include <Arduino.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7735.h>
+#include <SPI.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#define TFT_CS  5
+#define TFT_DC  15
+#define TFT_RST 4
+
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(115200);
+  delay(1000);
+
+  tft.initR(INITR_144GREENTAB);
+  tft.fillScreen(ST77XX_BLACK);
+  
+  tft.setTextColor(ST77XX_WHITE);
+  tft.setTextSize(2);
+  tft.setCursor(0, 0);
+  tft.print("TEST");
+  
+  Serial.println("Display initialized");
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
+void loop() {}
