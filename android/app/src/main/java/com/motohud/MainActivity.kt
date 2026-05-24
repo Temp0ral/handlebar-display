@@ -2,9 +2,6 @@ package com.motohud
 
 import android.graphics.Color
 import android.util.Log
-import com.google.android.gms.location.R
-
-
 import android.Manifest
 import android.bluetooth.*
 import android.bluetooth.le.*
@@ -12,12 +9,21 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -30,8 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvDistance: TextView
     private lateinit var btnConnect: Button
     private lateinit var btnTest: Button
-    private lateinit var btnNavigate: Button
-    private lateinit var etDestination: EditText
+    private lateinit var etSearch: EditText
+    private lateinit var lvSuggestions: ListView
 
     // BLE
     private var bluetoothGatt: BluetoothGatt? = null
@@ -51,6 +57,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navManager: NavigationManager
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var locationCallback: LocationCallback? = null
+    private lateinit var placesClient: PlacesClient
+
+    // Flag to prevent text watcher firing when we set text after selection
+    private var isSelectingFromList = false
 
     private var testIndex = 0
     private val testInstructions = listOf(
@@ -70,7 +80,6 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.BLUETOOTH_CONNECT
                 ) != PackageManager.PERMISSION_GRANTED
             ) return
-
             if (device.name == DEVICE_NAME) {
                 bluetoothAdapter?.bluetoothLeScanner?.stopScan(this)
                 updateStatus("Connecting...", "#FFFF00")
@@ -115,8 +124,8 @@ class MainActivity : AppCompatActivity() {
         tvDistance = binding.tvDistance
         btnConnect = binding.btnConnect
         btnTest = binding.btnTest
-        btnNavigate = binding.btnNavigate
-        etDestination = binding.etDestination
+        etSearch = binding.etSearch
+        lvSuggestions = binding.lvSuggestions
 
         navManager = NavigationManager(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -132,18 +141,64 @@ class MainActivity : AppCompatActivity() {
             1
         )
 
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
+        }
+        placesClient = Places.createClient(this)
+
+        val token = AutocompleteSessionToken.newInstance()
+
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isSelectingFromList) return
+                val query = s.toString()
+                if (query.trim().length < 3) {
+                    lvSuggestions.visibility = View.GONE
+                    return
+                }
+                val request = FindAutocompletePredictionsRequest.builder()
+                    .setSessionToken(token)
+                    .setQuery(query)
+                    .build()
+
+                placesClient.findAutocompletePredictions(request)
+                    .addOnSuccessListener { response ->
+                        val suggestions = response.autocompletePredictions.map {
+                            it.getFullText(null).toString()
+                        }
+                        val adapter = ArrayAdapter(
+                            this@MainActivity,
+                            android.R.layout.simple_list_item_1,
+                            suggestions
+                        )
+                        lvSuggestions.adapter = adapter
+                        lvSuggestions.visibility = View.VISIBLE
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("MotoHUD", "Autocomplete error: ${e.message}")
+                        lvSuggestions.visibility = View.GONE
+                    }
+            }
+        })
+
+        lvSuggestions.setOnItemClickListener { _, _, position, _ ->
+            val selected = lvSuggestions.adapter.getItem(position).toString()
+            isSelectingFromList = true
+            etSearch.setText(selected)
+            etSearch.setSelection(selected.length)
+            isSelectingFromList = false
+            lvSuggestions.adapter = null
+            lvSuggestions.visibility = View.GONE
+            startNavigation(selected)
+        }
+
         btnConnect.setOnClickListener { startScan() }
 
         btnTest.setOnClickListener {
             sendToDisplay(testInstructions[testIndex])
             testIndex = (testIndex + 1) % testInstructions.size
-        }
-
-        btnNavigate.setOnClickListener {
-            val destination = etDestination.text.toString()
-            if (destination.isNotEmpty()) {
-                startNavigation(destination)
-            }
         }
     }
 

@@ -47,8 +47,9 @@
         android:textSize="20sp"
         android:padding="8dp"/>
 
+    <!-- Autocomplete Search -->
     <EditText
-        android:id="@+id/etDestination"
+        android:id="@+id/etSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter destination"
@@ -56,12 +57,12 @@
         android:textColorHint="#888888"
         android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/btnNavigate"
+    <ListView
+        android:id="@+id/lvSuggestions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start Navigation"
-        android:layout_marginTop="8dp"/>
+        android:background="#222222"
+        android:visibility="gone"/>
 
     <!-- Connect Button -->
     <Button
