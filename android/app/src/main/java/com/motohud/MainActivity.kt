@@ -52,6 +52,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var locationCallback: LocationCallback? = null
 
+    private var testIndex = 0
+    private val testInstructions = listOf(
+        "LEFT|Test Street|0.3 mi",
+        "RIGHT|Test Street|0.3 mi",
+        "STRAIGHT|Test Street|0.3 mi",
+        "UTURN|Test Street|0.3 mi",
+        "ARRIVE|Test Street|0.3 mi"
+    )
+
     // BLE Scan callback
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -126,7 +135,8 @@ class MainActivity : AppCompatActivity() {
         btnConnect.setOnClickListener { startScan() }
 
         btnTest.setOnClickListener {
-            sendToDisplay("< Turn LEFT|Main St|0.3 mi")
+            sendToDisplay(testInstructions[testIndex])
+            testIndex = (testIndex + 1) % testInstructions.size
         }
 
         btnNavigate.setOnClickListener {
