@@ -1,3 +1,4 @@
+
 package com.motohud
 
 import android.content.Context
@@ -9,7 +10,7 @@ import java.net.URL
 
 class NavigationManager(private val context: Context) {
 
-    private val apiKey = "AIzaSyCAj6Fmj5HOgO9FiX0DGcX1gHex_SAuihw"
+    private val apiKey = BuildConfig.MAPS_API_KEY
     private var steps = mutableListOf<NavStep>()
     private var currentStepIndex = 0
 
@@ -22,6 +23,7 @@ class NavigationManager(private val context: Context) {
     )
 
     suspend fun getRoute(destination: String, originLat: Double, originLng: Double): Boolean {
+        android.util.Log.d("MotoHUD", "API Key: $apiKey")
         return withContext(Dispatchers.IO) {
             try {
                 val url = "https://maps.googleapis.com/maps/api/directions/json?" +
